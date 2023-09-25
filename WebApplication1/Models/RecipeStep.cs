@@ -8,9 +8,8 @@ public class RecipeStep
     [Key] public int Id { get; set; }
     public int StepNo { get; set; }
     public string Description { get; set; }
-    public int ImageId { get; set; }
-    [ForeignKey("ImageId")] 
-    public Image Image { get; set; }
+    public string Title { get; set; }
 
-   
+
+ 
 }

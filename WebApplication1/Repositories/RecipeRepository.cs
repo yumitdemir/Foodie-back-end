@@ -1,4 +1,5 @@
-﻿using WebApplication1.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using WebApplication1.Data;
 using WebApplication1.Interfaces;
 using WebApplication1.Models;
 
@@ -20,5 +21,5 @@ public class RecipeRepository : IRecipeRepository
         return recipe;
     }
 
- 
+
 }

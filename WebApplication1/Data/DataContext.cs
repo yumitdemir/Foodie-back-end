@@ -21,13 +21,7 @@ public class DataContext : DbContext
         modelBuilder.Entity<Ingredient>().OwnsOne(i => i.Nutrition);
 
 
-        modelBuilder.Entity<RecipeStep>()
-            .HasOne(rs => rs.Image)
-            .WithMany()
-            .HasForeignKey(rs => rs.ImageId)
-            .OnDelete(DeleteBehavior.Restrict);
 
-       
 
         modelBuilder.Entity<Comment>()
             .HasOne(c => c.UserCommented)

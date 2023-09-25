@@ -9,15 +9,18 @@ namespace WebApplication1.Controllers;
 [ApiController]
 public class RecipesController : ControllerBase
 {
-    private readonly IImageRepository _imageRepository;
     private readonly IImageService _imageService;
+    private readonly IIngredientRepository _ingredientRepository;
+    private readonly IRecipeRepository _recipeRepository;
     private readonly IUserRepository _userRepository;
 
-    public RecipesController(IImageRepository imageRepository, IImageService imageService,
+    public RecipesController(IImageService imageService,
+        IIngredientRepository ingredientRepository, IRecipeRepository recipeRepository,
         IUserRepository userRepository)
     {
-        _imageRepository = imageRepository;
         _imageService = imageService;
+        _ingredientRepository = ingredientRepository;
+        _recipeRepository = recipeRepository;
         _userRepository = userRepository;
     }
 
@@ -36,12 +39,17 @@ public class RecipesController : ControllerBase
             NotFound("User not found");
         }
 
-        bool isPreparationRightFormat = TimeSpan.TryParse(request.PreparationTime, out TimeSpan preparationTime);
-        if (!isPreparationRightFormat)
+        TimeSpan preparationTime = new TimeSpan();
+        if (request.PreparationTime != null)
         {
-            ModelState.AddModelError("PreparationTime", "PreparationTime is not in the correct format");
-            return BadRequest(ModelState);
+            bool isPreparationRightFormat = TimeSpan.TryParse(request.PreparationTime, out preparationTime);
+            if (!isPreparationRightFormat)
+            {
+                ModelState.AddModelError("PreparationTime", "PreparationTime is not in the correct format");
+                return BadRequest(ModelState);
+            }
         }
+
 
         // Upload Image
         Image thumbnailImage = new Image();
@@ -61,6 +69,33 @@ public class RecipesController : ControllerBase
             BadRequest(ModelState);
         }
 
+        // ingredients
+        var ingredients = new List<Ingredient>();
+        foreach (var id in request.IngredientIds)
+        {
+            var ingredient = await _ingredientRepository.GetByIdAsync(id);
+            if (ingredient == null)
+            {
+                return NotFound("Couldn't find the ingredient");
+            }
+
+            ingredients.Add(ingredient);
+        }
+
+        // Recipe steps
+        var recipeSteps = new List<RecipeStep>();
+        foreach (var step in request.RecipeSteps)
+        {
+            var tempRecipeStep = new RecipeStep
+            {
+                Description = step.Description,
+                Title = step.Title,
+                StepNo = step.StepNo,
+            };
+            recipeSteps.Add(tempRecipeStep);
+        }
+
+
         //Recipe Creation
         var recipeModel = new Recipe
         {
@@ -71,10 +106,12 @@ public class RecipesController : ControllerBase
             PreparationTime = preparationTime,
             ServingSize = request.ServingSize,
             ImageId = thumbnailImage.Id,
-            
+            Steps = recipeSteps,
+            Ingredients = ingredients,
         };
+        var recipe = await _recipeRepository.Create(recipeModel);
 
 
-        return BadRequest(ModelState);
+        return Ok(recipe);
     }
 }

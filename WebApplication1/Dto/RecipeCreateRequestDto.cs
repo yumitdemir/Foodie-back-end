@@ -22,7 +22,8 @@ public class RecipeCreateRequestDto
 
     public List<int> IngredientIds { get; set; }
 
-    public List<RecipeStep> RecipeSteps { get; set; }
+    
+    public IEnumerable<RecipeStepRequest> RecipeSteps { get; set; }
 
     public int? ServingSize { get; set; }
     public string? PreparationTime { get; set; }
