@@ -11,30 +11,42 @@ public class IngredientsController : ControllerBase
 {
     private readonly IImageService _imageService;
     private readonly IImageRepository _imageRepository;
+    private readonly IIngredientRepository _ingredientRepository;
 
-    public IngredientsController(IImageService imageService, IImageRepository imageRepository)
+    public IngredientsController(IImageService imageService, IImageRepository imageRepository,
+        IIngredientRepository ingredientRepository)
     {
         _imageService = imageService;
         _imageRepository = imageRepository;
+        _ingredientRepository = ingredientRepository;
     }
 
     [HttpPost]
     [Route("Create")]
     public async Task<IActionResult> Create([FromForm] IngredientCreateRequestDto request)
     {
+        
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        // Upload Image
         try
         {
-            _imageService.ValidateFileUpload(request);
+            var file = new FileUploadDto
+            {
+                File = request.File,
+                FileName = request.FileName,
+                FileDescription = request.FileDescription
+            };
+            await _imageService.UploadImageAsync(file);
         }
         catch (Exception e)
         {
             ModelState.AddModelError("file", e.Message);
         }
 
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
+      
 
         var imageModel = new Image
         {
@@ -46,7 +58,25 @@ public class IngredientsController : ControllerBase
         };
         var image = await _imageRepository.Upload(imageModel);
 
+        PriceUnitType? priceUnit = null;
+        if (!string.IsNullOrEmpty(request.PriceUnit) &&
+            Enum.TryParse<PriceUnitType>(request.PriceUnit, true, out PriceUnitType parsedPriceUnit))
+        {
+            var ingredinet = new Ingredient
+            {
+                Name = request.Name,
+                Desccription = request.Desccription,
+                ImageId = image.Id,
+                Nutrition = request.Nutrition,
+                PriceUnit = parsedPriceUnit,
+                UnitPrice = request.UnitPrice,
+            };
 
-        return Ok();
+            await _ingredientRepository.Create(ingredinet);
+            return Ok();
+        }
+
+        ModelState.AddModelError("priceUnit", "PriceUnit is not in correct structure");
+        return BadRequest(ModelState);
     }
 }
