@@ -24,4 +24,7 @@ public class Recipe
 
     public int? ServingSize { get; set; }
     public TimeSpan? PreparationTime { get; set; }
+
+    public List<RecipeTag>? RecipeTags { get; set; }
 }
+

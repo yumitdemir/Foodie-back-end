@@ -9,6 +9,16 @@ using WebApplication1.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+        build =>
+        {
+            build.WithOrigins("http://localhost:5173","http://localhost:5173/");
+            build.AllowAnyHeader();
+            build.AllowAnyMethod();
+        });
+});
 
 builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
@@ -22,6 +32,7 @@ builder.Services.AddScoped<IImageRepository, LocalImageRepository>();
 builder.Services.AddScoped<IIngredientRepository, IngredientRepository>();
 builder.Services.AddScoped<IRecipeRepository, RecipeRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ITagRepository, TagRepository>();
 
 builder.Services.AddControllers().AddJsonOptions(x =>
     x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
@@ -52,5 +63,7 @@ app.UseStaticFiles(new StaticFileOptions
 });
 
 app.MapControllers();
+
+app.UseCors();
 
 app.Run();

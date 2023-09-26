@@ -13,15 +13,17 @@ public class RecipesController : ControllerBase
     private readonly IIngredientRepository _ingredientRepository;
     private readonly IRecipeRepository _recipeRepository;
     private readonly IUserRepository _userRepository;
+    private readonly ITagRepository _tagRepository;
 
     public RecipesController(IImageService imageService,
         IIngredientRepository ingredientRepository, IRecipeRepository recipeRepository,
-        IUserRepository userRepository)
+        IUserRepository userRepository, ITagRepository tagRepository)
     {
         _imageService = imageService;
         _ingredientRepository = ingredientRepository;
         _recipeRepository = recipeRepository;
         _userRepository = userRepository;
+        _tagRepository = tagRepository;
     }
 
     [HttpPost]
@@ -95,6 +97,19 @@ public class RecipesController : ControllerBase
             recipeSteps.Add(tempRecipeStep);
         }
 
+        // recipe tags 
+        var tags = new List<RecipeTag>();
+        if (request.TagIds != null)
+            foreach (var tagId in request.TagIds)
+            {
+                var tag = await _tagRepository.GetByIdAsync(tagId);
+                if (tag == null)
+                {
+                    return NotFound("Couldn't find provided tag");
+                }
+
+                tags.Add(tag);
+            }
 
         //Recipe Creation
         var recipeModel = new Recipe
@@ -108,9 +123,32 @@ public class RecipesController : ControllerBase
             ImageId = thumbnailImage.Id,
             Steps = recipeSteps,
             Ingredients = ingredients,
+            RecipeTags = tags
         };
         var recipe = await _recipeRepository.Create(recipeModel);
 
+
+        return Ok(recipe);
+    }
+
+    [HttpGet]
+    [Route("searchRecipes")]
+    public async Task<IActionResult> SearchRecipes([FromQuery] SearchRecipeRequestDto request)
+    {
+        var recipes = await _recipeRepository.GetRecipesByFilter(request);
+
+        return Ok(recipes);
+    }
+
+    [HttpGet]
+    [Route("GetRecipeDetails")]
+    public async Task<IActionResult> GetRecipeDetails([FromQuery] int id)
+    {
+        var recipe = await _recipeRepository.GetRecipeById(id);
+        if (recipe == null)
+        {
+            return NotFound();
+        }
 
         return Ok(recipe);
     }

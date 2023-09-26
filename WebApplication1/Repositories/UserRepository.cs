@@ -19,4 +19,11 @@ public class UserRepository : IUserRepository
         var user = await _dataContext.Users.FirstOrDefaultAsync(u => u.Id == id);
         return user;
     }
+
+    public async Task<User> Create(User user)
+    {
+        await _dataContext.Users.AddAsync(user);
+        await _dataContext.SaveChangesAsync();
+        return user;
+    }
 }

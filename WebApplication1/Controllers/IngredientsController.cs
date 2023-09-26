@@ -25,11 +25,11 @@ public class IngredientsController : ControllerBase
     [Route("Create")]
     public async Task<IActionResult> Create([FromForm] IngredientCreateRequestDto request)
     {
-        
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
+
         // Upload Image
         try
         {
@@ -46,7 +46,6 @@ public class IngredientsController : ControllerBase
             ModelState.AddModelError("file", e.Message);
         }
 
-      
 
         var imageModel = new Image
         {
@@ -58,25 +57,70 @@ public class IngredientsController : ControllerBase
         };
         var image = await _imageRepository.Upload(imageModel);
 
-        PriceUnitType? priceUnit = null;
-        if (!string.IsNullOrEmpty(request.PriceUnit) &&
-            Enum.TryParse<PriceUnitType>(request.PriceUnit, true, out PriceUnitType parsedPriceUnit))
+        var ingredinet = new Ingredient
         {
-            var ingredinet = new Ingredient
-            {
-                Name = request.Name,
-                Desccription = request.Desccription,
-                ImageId = image.Id,
-                Nutrition = request.Nutrition,
-                PriceUnit = parsedPriceUnit,
-                UnitPrice = request.UnitPrice,
-            };
+            Name = request.Name,
+            Desccription = request.Desccription,
+            ImageId = image.Id,
+            Nutrition = request.Nutrition,
+            UnitPrice = request.UnitPrice,
+        };
 
-            await _ingredientRepository.Create(ingredinet);
-            return Ok();
+        if (Enum.TryParse<PriceUnitType>(request.PriceUnit, true, out PriceUnitType parsedPriceUnit))
+        {
+            ingredinet.PriceUnit = parsedPriceUnit;
         }
 
-        ModelState.AddModelError("priceUnit", "PriceUnit is not in correct structure");
-        return BadRequest(ModelState);
+        await _ingredientRepository.Create(ingredinet);
+        return Ok(ingredinet);
     }
+
+    [HttpGet]
+    [Route("GetIngredientsByName")]
+    public async Task<IActionResult> GetIngredientsByName([FromQuery] string name)
+    {
+        var ingredients = await _ingredientRepository.GetIngredientsByNameAsync(name);
+        if (ingredients == null)
+        {
+            NotFound();
+        }
+
+        return Ok(ingredients);
+    }
+    [HttpGet]
+    [Route("GetIngredientsByIds")]
+    public async Task<IActionResult> GetIngredientsByIds([FromQuery] List<int> IngredientIds)
+    {
+        var ingredients = new List<Ingredient>();
+        foreach (var id in IngredientIds)
+        {
+            var ingredient = await _ingredientRepository.GetByIdAsync(id);
+            if (ingredient != null)
+            {
+                ingredients.Add(ingredient);
+            }
+        }
+      
+        return Ok(ingredients);
+    }
+    
+    [HttpGet]
+    [Route("GetDefaultIngredientOptions")]
+    public async Task<IActionResult> GetDefaultIngredientOptions()
+    {
+        var defaultIngredientIds = new int[]
+        {
+            1,2,3,4,5,6,7,8,9,10
+        };
+        var ingredients = new List<Ingredient>();
+
+        foreach (var id in defaultIngredientIds)
+        {
+            var ingredient = await _ingredientRepository.GetByIdAsync(id);
+            if (ingredient != null) ingredients.Add(ingredient);
+        }
+
+        return Ok(ingredients);
+    }
+    
 }

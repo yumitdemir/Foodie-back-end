@@ -15,12 +15,11 @@ public class DataContext : DbContext
     public DbSet<Comment> Comments { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<RecipeStep> RecipeSteps { get; set; }
+    public DbSet<RecipeTag> RecipeTags { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Ingredient>().OwnsOne(i => i.Nutrition);
-
-
 
 
         modelBuilder.Entity<Comment>()

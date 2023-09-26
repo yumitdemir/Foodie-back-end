@@ -26,4 +26,11 @@ public class IngredientRepository : IIngredientRepository
        var ingredient = await _dataContext.Ingredients.FirstOrDefaultAsync(i => i.Id == id);
         return ingredient;
     }
+
+    public async Task<List<Ingredient>?> GetIngredientsByNameAsync(string name)
+    {
+        var ingredients =  await _dataContext.Ingredients
+            .Where(i => i.Name.ToLower().StartsWith(name.ToLower())).ToListAsync();
+       return ingredients;
+    }
 }
