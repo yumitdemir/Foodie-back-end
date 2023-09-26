@@ -3916,11 +3916,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\umitd\\OneDrive\\Desktop\\WebApplication1\\WebApplication1\\WebApplication1.csproj",
-      "projectName": "WebApplication1",
-      "projectPath": "C:\\Users\\umitd\\OneDrive\\Desktop\\WebApplication1\\WebApplication1\\WebApplication1.csproj",
+      "projectUniqueName": "C:\\Users\\umitd\\OneDrive\\Desktop\\WebApplication1\\Foodie\\Foodie.csproj",
+      "projectName": "Foodie",
+      "projectPath": "C:\\Users\\umitd\\OneDrive\\Desktop\\WebApplication1\\Foodie\\Foodie.csproj",
       "packagesPath": "C:\\Users\\umitd\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\umitd\\OneDrive\\Desktop\\WebApplication1\\WebApplication1\\obj\\",
+      "outputPath": "C:\\Users\\umitd\\OneDrive\\Desktop\\WebApplication1\\Foodie\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\umitd\\AppData\\Roaming\\NuGet\\NuGet.Config",

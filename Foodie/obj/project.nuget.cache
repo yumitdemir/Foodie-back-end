@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "vvLcSzuR2M7td4f/PAHElHqiHJxLxXtPjTdGprzzCifzakshW7wHe3UR5WLpw3vVujn4xqY7RLBnFaCVCCLnRg==",
+  "dgSpecHash": "TZ8jvWjOoWUQbz/gwlHBiv2kfoAJdNBaUeYH6dFsZO+lbfQJkaY0PkgHcRd9PNhPizq0daLxYZFwY3MyyXAu/Q==",
   "success": true,
-  "projectFilePath": "C:\\Users\\umitd\\OneDrive\\Desktop\\WebApplication1\\WebApplication1\\WebApplication1.csproj",
+  "projectFilePath": "C:\\Users\\umitd\\OneDrive\\Desktop\\WebApplication1\\Foodie\\Foodie.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\umitd\\.nuget\\packages\\azure.core\\1.24.0\\azure.core.1.24.0.nupkg.sha512",
     "C:\\Users\\umitd\\.nuget\\packages\\azure.identity\\1.6.0\\azure.identity.1.6.0.nupkg.sha512",
